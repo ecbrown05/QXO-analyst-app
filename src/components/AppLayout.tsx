@@ -1,5 +1,6 @@
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/AppSidebar";
+import { UserBadge } from "@/components/auth/UserBadge";
 import { Outlet } from "react-router-dom";
 
 export function AppLayout() {
@@ -13,6 +14,7 @@ export function AppLayout() {
             <span className="text-sm text-muted-foreground">
               Pricing Analyst Copilot
             </span>
+            <UserBadge />
           </header>
           <main className="flex-1 overflow-auto">
             <Outlet />

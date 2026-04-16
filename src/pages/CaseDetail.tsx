@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Copy, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { getCaseById } from "@/api/cases";
 
 const CASE_TYPE_LABELS: Record<string, string> = {
   existing_deviation: "Existing Deviation",
@@ -24,11 +24,7 @@ export default function CaseDetail() {
 
   const { data: caseData, isLoading } = useQuery({
     queryKey: ["case", id],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("cases").select("*").eq("id", id!).single();
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => getCaseById(id!),
     enabled: !!id,
   });
 

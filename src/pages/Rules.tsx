@@ -1,28 +1,20 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table";
+import { getGovernanceThresholds, getSpendClassThresholds } from "@/api/reference";
 
 export default function Rules() {
   const { data: thresholds } = useQuery({
     queryKey: ["rules-thresholds"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("spend_class_thresholds").select("*").order("class");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getSpendClassThresholds,
   });
 
   const { data: governance } = useQuery({
     queryKey: ["rules-governance"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("governance_thresholds").select("*").order("request_type");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getGovernanceThresholds,
   });
 
   return (

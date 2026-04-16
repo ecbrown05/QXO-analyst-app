@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import {
@@ -8,44 +7,34 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Search } from "lucide-react";
+import {
+  getGovernanceThresholds,
+  getSpendClassThresholds,
+  listCustomers,
+  listSkus,
+} from "@/api/reference";
 
 export default function ReferenceData() {
   const [search, setSearch] = useState("");
 
   const { data: customers } = useQuery({
-    queryKey: ["ref-customers"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("customers").select("*").order("customer_name").limit(100);
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ["ref-customers", search],
+    queryFn: () => listCustomers(search, 100),
   });
 
   const { data: skus } = useQuery({
-    queryKey: ["ref-skus"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("skus").select("*").order("sku_code").limit(100);
-      if (error) throw error;
-      return data;
-    },
+    queryKey: ["ref-skus", search],
+    queryFn: () => listSkus(search, 100),
   });
 
   const { data: thresholds } = useQuery({
     queryKey: ["ref-thresholds"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("spend_class_thresholds").select("*").order("class");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getSpendClassThresholds,
   });
 
   const { data: governance } = useQuery({
     queryKey: ["ref-governance"],
-    queryFn: async () => {
-      const { data, error } = await supabase.from("governance_thresholds").select("*").order("request_type");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: getGovernanceThresholds,
   });
 
   return (
@@ -85,7 +74,7 @@ export default function ReferenceData() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {customers?.filter((c) => !search || c.customer_name.toLowerCase().includes(search.toLowerCase()) || c.customer_id.toLowerCase().includes(search.toLowerCase())).map((c) => (
+              {customers?.map((c) => (
                 <TableRow key={c.id}>
                   <TableCell className="font-mono text-xs">{c.customer_id}</TableCell>
                   <TableCell>{c.customer_name}</TableCell>
@@ -112,7 +101,7 @@ export default function ReferenceData() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {skus?.filter((s) => !search || s.sku_code.toLowerCase().includes(search.toLowerCase()) || s.description.toLowerCase().includes(search.toLowerCase())).map((s) => (
+              {skus?.map((s) => (
                 <TableRow key={s.id}>
                   <TableCell className="font-mono text-sm">{s.sku_code}</TableCell>
                   <TableCell>{s.description}</TableCell>

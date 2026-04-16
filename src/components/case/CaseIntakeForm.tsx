@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,10 +8,8 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ArrowLeft, ArrowRight, AlertTriangle, Upload, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import type { Database } from "@/integrations/supabase/types";
-
-type RequestType = Database["public"]["Enums"]["request_type"];
-type SpendClass = Database["public"]["Enums"]["spend_class"];
+import { parseIntake } from "@/api/parse-intake";
+import type { RequestType, SpendClass } from "../../../shared/domain";
 
 interface CaseIntakeFormProps {
   requestType: RequestType;
@@ -54,14 +50,9 @@ export function CaseIntakeForm({ requestType, sourceText, onSourceTextChange, on
     if (sourceText.trim()) {
       setParsing(true);
       try {
-        const { data, error } = await supabase.functions.invoke("parse-intake", {
-          body: { source_text: sourceText, request_type: requestType },
-        });
-        if (error) {
-          throw error;
-        }
-        if (!error && data?.fields) {
-          const extracted = data.fields as Record<string, string | null>;
+        const body = await parseIntake(sourceText, requestType);
+        if (body?.fields && typeof body.fields === "object") {
+          const extracted = body.fields;
           setFormData((prev) => {
             const merged = { ...prev };
             for (const [key, val] of Object.entries(extracted)) {
@@ -71,12 +62,25 @@ export function CaseIntakeForm({ requestType, sourceText, onSourceTextChange, on
             }
             return merged;
           });
+          const hasAnyValue = Object.values(extracted).some((v) => v != null && String(v).trim() !== "");
+          if (!hasAnyValue) {
+            toast({
+              title: "Nothing extracted",
+              description:
+                "The model returned empty fields. Try a clearer prompt with customer, SKU, prices, and requester, or fill the form manually.",
+              variant: "destructive",
+            });
+          }
         }
       } catch (err) {
         console.warn("Auto-fill extraction failed, proceeding with blank form:", err);
+        const msg = err instanceof Error ? err.message : String(err);
         toast({
           title: "Auto-fill failed",
-          description: "The parser could not extract fields. You can still complete the form manually.",
+          description:
+            msg.length > 220
+              ? `${msg.slice(0, 220)}… — You can still complete the form manually.`
+              : `${msg} You can still complete the form manually.`,
           variant: "destructive",
         });
       } finally {

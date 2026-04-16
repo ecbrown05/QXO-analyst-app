@@ -1,0 +1,62 @@
+[
+  {
+    "id": "threshold-a",
+    "class": "A",
+    "min_revenue": 650000,
+    "max_revenue": 5000000,
+    "avg_revenue": 1200000,
+    "min_weeks": 40,
+    "max_weeks": 52,
+    "avg_weeks": 46,
+    "growth_threshold": 15,
+    "weighted_score_min": 3.5,
+    "weighted_score_max": 4,
+    "created_at": "2026-04-16T00:00:00.000Z",
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "threshold-b",
+    "class": "B",
+    "min_revenue": 250000,
+    "max_revenue": 649999,
+    "avg_revenue": 400000,
+    "min_weeks": 22,
+    "max_weeks": 39,
+    "avg_weeks": 30,
+    "growth_threshold": 8,
+    "weighted_score_min": 2.5,
+    "weighted_score_max": 3.49,
+    "created_at": "2026-04-16T00:00:00.000Z",
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "threshold-c",
+    "class": "C",
+    "min_revenue": 100000,
+    "max_revenue": 249999,
+    "avg_revenue": 150000,
+    "min_weeks": 8,
+    "max_weeks": 21,
+    "avg_weeks": 14,
+    "growth_threshold": 3,
+    "weighted_score_min": 1.5,
+    "weighted_score_max": 2.49,
+    "created_at": "2026-04-16T00:00:00.000Z",
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "threshold-d",
+    "class": "D",
+    "min_revenue": 0,
+    "max_revenue": 99999,
+    "avg_revenue": 50000,
+    "min_weeks": 0,
+    "max_weeks": 7,
+    "avg_weeks": 4,
+    "growth_threshold": 0,
+    "weighted_score_min": 0,
+    "weighted_score_max": 1.49,
+    "created_at": "2026-04-16T00:00:00.000Z",
+    "updated_at": "2026-04-16T00:00:00.000Z"
+  }
+]

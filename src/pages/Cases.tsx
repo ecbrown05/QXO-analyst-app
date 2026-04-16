@@ -1,5 +1,4 @@
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +20,7 @@ import {
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Eye, Search } from "lucide-react";
+import { listCases } from "@/api/cases";
 
 const STATUS_COLORS: Record<string, string> = {
   draft: "bg-muted text-muted-foreground",
@@ -46,18 +46,7 @@ export default function Cases() {
 
   const { data: cases, isLoading } = useQuery({
     queryKey: ["cases", statusFilter, typeFilter],
-    queryFn: async () => {
-      let query = supabase.from("cases").select("*").order("created_at", { ascending: false });
-      if (statusFilter !== "all") {
-        query = query.eq("status", statusFilter as "draft" | "in_review" | "completed" | "escalated" | "blocked");
-      }
-      if (typeFilter !== "all") {
-        query = query.eq("request_type", typeFilter as "existing_deviation" | "new_deviation" | "spend_class_new" | "spend_class_existing" | "market_price_change");
-      }
-      const { data, error } = await query;
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => listCases({ status: statusFilter, requestType: typeFilter }),
   });
 
   const filteredCases = cases?.filter((c) =>

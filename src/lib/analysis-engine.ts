@@ -1,8 +1,4 @@
-import type { Database } from "@/integrations/supabase/types";
-
-type RequestType = Database["public"]["Enums"]["request_type"];
-type RecommendationType = Database["public"]["Enums"]["recommendation_type"];
-type SpendClass = Database["public"]["Enums"]["spend_class"];
+import type { RecommendationType, RequestType, SpendClass } from "../../shared/domain";
 
 export interface SpendClassResult {
   recommendedClass: SpendClass;

@@ -1,0 +1,92 @@
+[
+  {
+    "id": "gov-existing-standard",
+    "request_type": "existing_deviation",
+    "threshold_band": "standard",
+    "threshold_min": 0,
+    "threshold_max": 3,
+    "required_approvers": ["Pricing Manager"],
+    "escalation_notes": "Standard approval path for deviations up to 3% off target.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-existing-escalation",
+    "request_type": "existing_deviation",
+    "threshold_band": "escalation",
+    "threshold_min": 3.01,
+    "threshold_max": null,
+    "required_approvers": ["RVP", "Sales Director"],
+    "escalation_notes": "Deviations above 3% require RVP and Sales Director approval.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-new-standard",
+    "request_type": "new_deviation",
+    "threshold_band": "standard",
+    "threshold_min": 0,
+    "threshold_max": 3,
+    "required_approvers": ["Pricing Manager"],
+    "escalation_notes": "New deviations up to 3% can follow the standard review path with evidence.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-new-escalation",
+    "request_type": "new_deviation",
+    "threshold_band": "escalation",
+    "threshold_min": 3.01,
+    "threshold_max": null,
+    "required_approvers": ["RVP", "Sales Director"],
+    "escalation_notes": "New deviations above 3% require escalation.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-spend-new",
+    "request_type": "spend_class_new",
+    "threshold_band": "standard",
+    "threshold_min": null,
+    "threshold_max": null,
+    "required_approvers": ["Pricing Manager"],
+    "escalation_notes": "New customer spend class assignment follows the weighted score model.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-spend-existing-standard",
+    "request_type": "spend_class_existing",
+    "threshold_band": "standard",
+    "threshold_min": null,
+    "threshold_max": null,
+    "required_approvers": ["Pricing Manager", "RVP"],
+    "escalation_notes": "Existing customer spend class changes require business justification.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-spend-existing-escalation",
+    "request_type": "spend_class_existing",
+    "threshold_band": "escalation",
+    "threshold_min": null,
+    "threshold_max": null,
+    "required_approvers": ["RVP", "Sales VP", "Pricing Director"],
+    "escalation_notes": "D to B and any two-level spend class change requires senior approval.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-market-standard",
+    "request_type": "market_price_change",
+    "threshold_band": "standard",
+    "threshold_min": 0,
+    "threshold_max": 5,
+    "required_approvers": ["Pricing Manager"],
+    "escalation_notes": "Market price changes up to 5% can follow the standard review path.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  },
+  {
+    "id": "gov-market-escalation",
+    "request_type": "market_price_change",
+    "threshold_band": "escalation",
+    "threshold_min": 5.01,
+    "threshold_max": null,
+    "required_approvers": ["Director of Pricing", "RVP", "Sales VP"],
+    "escalation_notes": "Market price changes above 5% require Director of Pricing review.",
+    "created_at": "2026-04-16T00:00:00.000Z"
+  }
+]

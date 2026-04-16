@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Save, Copy, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { runAnalysis, type AnalysisResult } from "@/lib/analysis-engine";
-import type { Database } from "@/integrations/supabase/types";
-
-type RequestType = Database["public"]["Enums"]["request_type"];
+import { createCase } from "@/api/cases";
+import { useSignedInUser } from "@/auth/useSignedInUser";
+import type { RequestType, SpendClass } from "../../../shared/domain";
 
 interface CaseAnalysisProps {
   requestType: RequestType;
@@ -20,6 +19,7 @@ interface CaseAnalysisProps {
 export function CaseAnalysis({ requestType, caseData, onBack }: CaseAnalysisProps) {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const user = useSignedInUser();
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -29,7 +29,7 @@ export function CaseAnalysis({ requestType, caseData, onBack }: CaseAnalysisProp
     setSaving(true);
     try {
       const caseNumber = `PRC-${Date.now().toString(36).toUpperCase()}`;
-      const { error } = await supabase.from("cases").insert({
+      await createCase({
         case_number: caseNumber,
         request_type: requestType,
         status: result.recommendation ? "completed" : "in_review",
@@ -51,8 +51,8 @@ export function CaseAnalysis({ requestType, caseData, onBack }: CaseAnalysisProp
         historical_revenue: num(caseData.historical_revenue),
         order_frequency: caseData.order_frequency ? parseInt(String(caseData.order_frequency)) : null,
         growth_rate: num(caseData.growth_rate),
-        current_spend_class: caseData.current_spend_class as Database["public"]["Enums"]["spend_class"] | null ?? null,
-        requested_spend_class: caseData.requested_spend_class as Database["public"]["Enums"]["spend_class"] | null ?? null,
+        current_spend_class: caseData.current_spend_class as SpendClass | null ?? null,
+        requested_spend_class: caseData.requested_spend_class as SpendClass | null ?? null,
         competitor_bid: str(caseData.competitor_bid),
         reason_for_request: str(caseData.reason_for_request),
         evidence_provided: str(caseData.evidence_provided),
@@ -66,8 +66,10 @@ export function CaseAnalysis({ requestType, caseData, onBack }: CaseAnalysisProp
         recommendation_reasons: result.reasons ?? null,
         required_approvers: result.approvers ?? null,
         suggested_response: result.suggestedResponse ?? null,
+        analyst_notes: null,
+        requested_deviation_percent: null,
+        created_by: user?.email ?? user?.oid ?? null,
       });
-      if (error) throw error;
       toast({ title: "Case saved", description: caseNumber });
       navigate("/cases");
     } catch (err) {
