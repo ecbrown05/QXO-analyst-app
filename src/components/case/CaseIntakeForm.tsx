@@ -57,6 +57,9 @@ export function CaseIntakeForm({ requestType, sourceText, onSourceTextChange, on
         const { data, error } = await supabase.functions.invoke("parse-intake", {
           body: { source_text: sourceText, request_type: requestType },
         });
+        if (error) {
+          throw error;
+        }
         if (!error && data?.fields) {
           const extracted = data.fields as Record<string, string | null>;
           setFormData((prev) => {
@@ -71,6 +74,11 @@ export function CaseIntakeForm({ requestType, sourceText, onSourceTextChange, on
         }
       } catch (err) {
         console.warn("Auto-fill extraction failed, proceeding with blank form:", err);
+        toast({
+          title: "Auto-fill failed",
+          description: "The parser could not extract fields. You can still complete the form manually.",
+          variant: "destructive",
+        });
       } finally {
         setParsing(false);
       }

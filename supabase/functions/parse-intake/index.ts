@@ -1,8 +1,10 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const ANTHROPIC_API_KEY = Deno.env.get("ANTHROPIC_API_KEY");
-const ANTHROPIC_URL = "https://api.anthropic.com/v1/messages";
-const MODEL = "claude-sonnet-4-20250514";
+const ANTHROPIC_MESSAGES_URL = Deno.env.get("ANTHROPIC_MESSAGES_URL");
+const ANTHROPIC_BASE_URL = Deno.env.get("ANTHROPIC_BASE_URL") ?? "https://api.anthropic.com";
+const ANTHROPIC_VERSION = Deno.env.get("ANTHROPIC_VERSION") ?? "2023-06-01";
+const MODEL = Deno.env.get("ANTHROPIC_MODEL") ?? "claude-sonnet-4-20250514";
 
 const FIELDS_BY_TYPE: Record<string, string[]> = {
   existing_deviation: [
@@ -79,14 +81,21 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
+function getMessagesUrl(): string {
+  if (ANTHROPIC_MESSAGES_URL) return ANTHROPIC_MESSAGES_URL;
+  const trimmed = ANTHROPIC_BASE_URL.replace(/\/+$/, "");
+  if (trimmed.endsWith("/v1")) return `${trimmed}/messages`;
+  return `${trimmed}/v1/messages`;
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
   }
 
-  if (!ANTHROPIC_API_KEY) {
+  if (!ANTHROPIC_API_KEY && !ANTHROPIC_MESSAGES_URL && !ANTHROPIC_BASE_URL) {
     return new Response(
-      JSON.stringify({ error: "ANTHROPIC_API_KEY not configured" }),
+      JSON.stringify({ error: "Anthropic gateway/API is not configured" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } },
     );
   }
@@ -108,12 +117,12 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const anthropicRes = await fetch(ANTHROPIC_URL, {
+    const anthropicRes = await fetch(getMessagesUrl(), {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "x-api-key": ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01",
+        "anthropic-version": ANTHROPIC_VERSION,
+        ...(ANTHROPIC_API_KEY ? { "x-api-key": ANTHROPIC_API_KEY } : {}),
       },
       body: JSON.stringify({
         model: MODEL,
